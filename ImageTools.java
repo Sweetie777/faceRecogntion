@@ -1,8 +1,10 @@
 package com.tang.utils;
 
+import org.apache.commons.io.IOUtils;
 import sun.nio.ch.IOUtil;
 
 import java.io.*;
+import java.util.Base64;
 
 /**
  * Author: Sweetie77
@@ -16,7 +18,7 @@ public class ImageTools {
      * 3. 对file进行base64编码
      */
 
-    public String getProjectPath(){
+    private static String getProjectPath(){
 
         String projectPath = ImageTools.class.getResource("/").toString();
         projectPath = projectPath.substring(projectPath.indexOf("target"));
@@ -24,37 +26,38 @@ public class ImageTools {
     }
 
 
-    public String getImagePath(){
+    private static String getImagePath(){
         String imagePath = null;
         String temp = getProjectPath()+"image";
         File file = new File(temp);
-        if(!file.exists()){
-            boolean flag = file.mkdir();
-            if(flag) {
-                System.out.println("目录创建成功");
-                imagePath = temp;
-            }else {
-                throw new RuntimeException("目录创建失败");
-            }
+        if(file.exists()){
+            System.out.println("image文件已经存在, 不需要创建");
         }else{
-            imagePath = temp;
-            System.out.println("目录存在");
+            File director = new File(temp);
+            if(director.mkdirs()){
+                System.out.println("image文件创建成功");
+                imagePath = temp;
+            }else{
+                throw new RuntimeException("文件创建失败");
+            }
         }
         return imagePath;
     }
 
-    public String getImageBase64Str(String imageName){
-        String imagePath = getImagePath();
-        String result = null;
-        File file  = new File(imagePath,imageName);
+    public static String getImageBase64Str(String imageName){
+        String imageBase64Str=null;
+        String imagePath=getImagePath();
+        // 根据文件名称和文件路径构建file对象
+        File file=new File(imagePath,imageName);
         try {
-            InputStream is = new FileInputStream(file);
-            byte[] =IOUtil
-        } catch (FileNotFoundException e) {
+            // 获取文件的输入流
+            InputStream in=new FileInputStream(file);
+            byte[] data=IOUtils.toByteArray(in);
+            // 进行base64编码
+            imageBase64Str=Base64.getEncoder().encodeToString(data);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return;
+        return imageBase64Str;
     }
-
 }
